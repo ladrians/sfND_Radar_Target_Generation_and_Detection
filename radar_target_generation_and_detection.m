@@ -11,7 +11,7 @@ clc;
 
 fc = 77.0e9; %77GHz
 range_max = 200; % given radar max range
-delta_r = l; % range resolution in mts
+delta_r = 1; % range resolution in mts
 max_vel = 100;
 
 %speed of light = 3e8
@@ -71,18 +71,20 @@ for i=1:length(t)
     
     % *%TODO* :
     %For each time stamp update the Range of the Target for constant velocity. 
+    r_t(i) = target_initial_position + target_initial_velocity * t(i);
+    td(i) = 2 * r_t(i) / c;
     
     % *%TODO* :
     %For each time sample we need update the transmitted and
     %received signal. 
-    Tx(i) = 
-    Rx (i)  =
+    Tx(i) = cos(2*pi*(fc*t(i) + (slope*t(i)^2/2)));
+    Rx(i) = cos(2 * pi * (fc * (t(i) - td(i)) + (slope * (t(i) - td(i))^2/2)));
     
     % *%TODO* :
     %Now by mixing the Transmit and Receive generate the beat signal
     %This is done by element wise matrix multiplication of Transmit and
     %Receiver Signal
-    Mix(i) = 
+    Mix(i) = Tx(i) .* Rx(i);
     
 end
 
@@ -92,18 +94,22 @@ end
  % *%TODO* :
 %reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
 %Range and Doppler FFT respectively.
+Mix = reshape(Mix, [Nr, Nd]);
 
  % *%TODO* :
 %run the FFT on the beat signal along the range bins dimension (Nr) and
 %normalize.
+signal_fft = fft(Mix,Nr);
 
  % *%TODO* :
 % Take the absolute value of FFT output
+signal_fft = abs(signal_fft);
+signal_fft = signal_fft./max(signal_fft);
 
  % *%TODO* :
 % Output of FFT is double sided signal, but we are interested in only one side of the spectrum.
 % Hence we throw out half of the samples.
-
+P1  = signal_fft(1:Nr/2+1);
 
 %plotting the range
 figure ('Name','Range from First FFT')
@@ -111,7 +117,7 @@ subplot(2,1,1)
 
  % *%TODO* :
  % plot FFT output 
-
+plot(P1);
  
 axis ([0 200 0 1]);
 
