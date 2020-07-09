@@ -149,3 +149,4 @@ It was not needed to equate all the non-thresholded cells to 0 to suppress the n
 
  * [Project Rubric](https://review.udacity.com/#!/rubrics/2548/view)
  * [Code](radar_target_generation_and_detection.m)
+ * [This project](https://github.com/ladrians/sfND_Radar_Target_Generation_and_Detection)
